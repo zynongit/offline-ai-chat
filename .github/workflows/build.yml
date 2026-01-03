@@ -1,0 +1,103 @@
+name: Build Offline AI Chat
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  android:
+    name: Build Android APK
+    runs-on: ubuntu-latest
+    env:
+      ANDROID_SDK_ROOT: ${{ github.workspace }}/Android/Sdk
+
+    steps:
+    - name: Checkout repo
+      uses: actions/checkout@v3
+
+    - name: Install dependencies
+      run: |
+        sudo apt update
+        sudo apt install -y python3-pip unzip openjdk-11-jdk git
+        pip install --upgrade pip
+        pip install kivy==2.3.1 buildozer==2.0.3 pyjnius llama-cpp-python numpy
+
+    - name: Setup Android SDK
+      run: |
+        mkdir -p $ANDROID_SDK_ROOT/cmdline-tools
+        cd $ANDROID_SDK_ROOT/cmdline-tools
+        wget https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip -O commandlinetools.zip
+        unzip commandlinetools.zip -d latest
+        rm commandlinetools.zip
+        mv latest/cmdline-tools/* latest/
+        yes | $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager --licenses
+        $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager "platform-tools" "platforms;android-34" "build-tools;34.0.0"
+
+    - name: Build APK
+      run: |
+        buildozer android debug
+      working-directory: ${{ github.workspace }}
+
+    - name: Upload APK
+      uses: actions/upload-artifact@v3
+      with:
+        name: OfflineAIChat-Android
+        path: bin/*.apk
+
+  windows:
+    name: Build Windows EXE
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: 3.12
+
+    - name: Install dependencies
+      run: |
+        pip install --upgrade pip
+        pip install kivy==2.3.1 pyinstaller llama-cpp-python numpy
+
+    - name: Build EXE
+      run: |
+        pyinstaller --onefile --windowed main.py
+        mkdir dist
+        move dist\main.exe dist\OfflineAIChat.exe
+
+    - name: Upload EXE
+      uses: actions/upload-artifact@v3
+      with:
+        name: OfflineAIChat-Windows
+        path: dist/OfflineAIChat.exe
+
+  linux:
+    name: Build Linux AppImage
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Install dependencies
+      run: |
+        sudo apt update
+        sudo apt install -y python3-pip wget
+        pip install --upgrade pip
+        pip install kivy==2.3.1 pyinstaller llama-cpp-python numpy
+
+    - name: Build AppImage
+      run: |
+        pyinstaller --onefile --windowed main.py
+        wget https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage -O appimagetool
+        chmod +x appimagetool
+        ./appimagetool dist dist/OfflineAIChat.AppImage
+
+    - name: Upload AppImage
+      uses: actions/upload-artifact@v3
+      with:
+        name: OfflineAIChat-Linux
+        path: dist/OfflineAIChat.AppImage
