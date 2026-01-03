@@ -22,7 +22,7 @@ jobs:
         sudo apt update
         sudo apt install -y python3-pip unzip openjdk-11-jdk git
         pip install --upgrade pip
-        pip install kivy==2.3.1 buildozer==2.0.3 pyjnius llama-cpp-python numpy
+        pip install kivy buildozer pyjnius llama-cpp-python numpy
 
     - name: Setup Android SDK
       run: |
@@ -61,7 +61,7 @@ jobs:
     - name: Install dependencies
       run: |
         pip install --upgrade pip
-        pip install kivy==2.3.1 pyinstaller llama-cpp-python numpy
+        pip install kivy pyinstaller llama-cpp-python numpy
 
     - name: Build EXE
       run: |
@@ -87,7 +87,7 @@ jobs:
         sudo apt update
         sudo apt install -y python3-pip wget
         pip install --upgrade pip
-        pip install kivy==2.3.1 pyinstaller llama-cpp-python numpy
+        pip install kivy pyinstaller llama-cpp-python numpy
 
     - name: Build AppImage
       run: |
