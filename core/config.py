@@ -1,0 +1,4 @@
+MODEL_PATH = "models/model.gguf"
+CTX_SIZE = 2048
+MAX_TOKENS = 256
+TEMPERATURE = 0.7
