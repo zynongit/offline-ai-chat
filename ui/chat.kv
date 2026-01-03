@@ -1,7 +1,7 @@
 <ChatLayout>:
     orientation: "vertical"
     padding: 10
-    spacing: 10
+    spacing: 8
 
     ScrollView:
         do_scroll_x: False
@@ -13,6 +13,13 @@
             text_size: self.width, None
             halign: "left"
             valign: "top"
+
+    Label:
+        text: root.typing_text
+        size_hint_y: None
+        height: "24dp"
+        color: 0.6, 0.6, 0.6, 1
+        italic: True
 
     BoxLayout:
         size_hint_y: None
