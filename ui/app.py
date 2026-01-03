@@ -1,7 +1,9 @@
 import os
 os.environ["KIVY_NO_MTDEV"] = "1"
 
+from threading import Thread
 from kivy.app import App
+from kivy.clock import Clock
 from kivy.uix.boxlayout import BoxLayout
 from kivy.properties import StringProperty
 
@@ -25,17 +27,33 @@ class ChatLayout(BoxLayout):
         if not user_input:
             return
 
-        self.chat_text += f"You: {user_input}\n"
+        self.chat_text += f"You: {user_input}\nAI: "
         self.ids.user_input.text = ""
 
-        prompt = "\n".join(self.memory + [f"User: {user_input}", "AI:"])
-        response = self.engine.generate(prompt)
+        Thread(
+            target=self._stream_response,
+            args=(user_input,),
+            daemon=True
+        ).start()
 
-        self.chat_text += f"AI: {response}\n\n"
+    def _stream_response(self, user_input):
+        prompt = "\n".join(self.memory + [f"User: {user_input}", "AI:"])
+        response_text = ""
+
+        for token in self.engine.stream(prompt):
+            response_text += token
+            Clock.schedule_once(
+                lambda dt, t=token: self._append_token(t)
+            )
 
         self.memory.append(f"User: {user_input}")
-        self.memory.append(f"AI: {response}")
+        self.memory.append(f"AI: {response_text}")
         save_memory(self.memory)
+
+        Clock.schedule_once(lambda dt: self._append_token("\n\n"))
+
+    def _append_token(self, token):
+        self.chat_text += token
 
 
 class OfflineAIChatApp(App):
