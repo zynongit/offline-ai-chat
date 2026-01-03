@@ -1,1 +1,5 @@
-llama-cpp-python
+kivy==2.3.1
+llama-cpp-python==0.1.50
+pyjnius==1.5.1         # só pro Android
+requests==2.31.0       # caso queira baixar updates ou modelos
+numpy==1.27.0          # dependência do llama-cpp
