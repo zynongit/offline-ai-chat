@@ -33,7 +33,7 @@ jobs:
         rm commandlinetools.zip
         mv latest/cmdline-tools/* latest/
         yes | $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager --licenses
-        $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager "platform-tools" "platforms;android-34" "build-tools;34.0.0"
+        $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager "platform-tools" "platforms;android-26" "build-tools;26.0.0"
 
     - name: Build APK
       run: |
