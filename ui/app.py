@@ -15,6 +15,9 @@ class ChatLayout(BoxLayout):
     chat_text = StringProperty("")
     typing_text = StringProperty("")
     is_typing = BooleanProperty(False)
+    cursor = StringProperty("")
+    cursor_visible = BooleanProperty(False)
+
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
