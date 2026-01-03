@@ -10,3 +10,4 @@ Place **.gguf** models here for offline use with llama.cpp.
 - Qwen 1.5B (Q4)
 
 Rename the active model to:
+**model.gguf**
