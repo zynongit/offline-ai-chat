@@ -1,47 +1,38 @@
-import os
-os.environ["KIVY_NO_MTDEV"] = "1"
+<ChatLayout>:
+    orientation: "vertical"
+    padding: 10
+    spacing: 10
 
-from kivy.app import App
-from kivy.uix.boxlayout import BoxLayout
-from kivy.properties import StringProperty
+    ScrollView:
+        do_scroll_x: False
 
-from core.llama_engine import LlamaEngine
-from core.memory import load_memory, save_memory
+        Label:
+            text: root.chat_text
+            size_hint_y: None
+            height: self.texture_size[1]
+            text_size: self.width, None
+            halign: "left"
+            valign: "top"
 
+    BoxLayout:
+        size_hint_y: None
+        height: "48dp"
+        spacing: 5
 
-class ChatLayout(BoxLayout):
-    chat_text = StringProperty("")
+        TextInput:
+            id: user_input
+            multiline: False
+            hint_text: "Type a message..."
+            on_text_validate: root.send_message()
 
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self.engine = LlamaEngine()
-        self.memory = load_memory()
+        Button:
+            text: "Send"
+            size_hint_x: None
+            width: "90dp"
+            on_press: root.send_message()
 
-        for msg in self.memory:
-            self.chat_text += msg + "\n"
-
-    def send_message(self):
-        user_input = self.ids.user_input.text.strip()
-        if not user_input:
-            return
-
-        self.chat_text += f"You: {user_input}\n"
-        self.ids.user_input.text = ""
-
-        prompt = "\n".join(self.memory + [f"User: {user_input}", "AI:"])
-        response = self.engine.generate(prompt)
-
-        self.chat_text += f"AI: {response}\n\n"
-
-        self.memory.append(f"User: {user_input}")
-        self.memory.append(f"AI: {response}")
-        save_memory(self.memory)
-
-
-class OfflineAIChatApp(App):
-    def build(self):
-        return ChatLayout()
-
-
-if __name__ == "__main__":
-    OfflineAIChatApp().run()
+        Button:
+            text: "Stop"
+            size_hint_x: None
+            width: "70dp"
+            on_press: root.stop_generation()
