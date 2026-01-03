@@ -93,9 +93,10 @@ class ChatLayout(BoxLayout):
             self._update_typing_text, 0.4
         )
 
-    def _stop_typing(self):
-        self.is_typing = False
-        self.typing_text = ""
+    def stop_generation(self):
+        self.stop_flag = True
+        self._stop_typing()
+
 
         if self._typing_event:
             self._typing_event.cancel()
