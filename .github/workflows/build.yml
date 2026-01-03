@@ -41,7 +41,7 @@ jobs:
       working-directory: ${{ github.workspace }}
 
     - name: Upload APK
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: OfflineAIChat-Android
         path: bin/*.apk
@@ -70,7 +70,7 @@ jobs:
         move dist\main.exe dist\OfflineAIChat.exe
 
     - name: Upload EXE
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: OfflineAIChat-Windows
         path: dist/OfflineAIChat.exe
@@ -97,7 +97,7 @@ jobs:
         ./appimagetool dist dist/OfflineAIChat.AppImage
 
     - name: Upload AppImage
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: OfflineAIChat-Linux
         path: dist/OfflineAIChat.AppImage
