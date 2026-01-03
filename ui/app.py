@@ -18,6 +18,7 @@ class ChatLayout(BoxLayout):
         super().__init__(**kwargs)
         self.engine = LlamaEngine()
         self.memory = load_memory()
+        self.stop_flag = False
 
         for msg in self.memory:
             self.chat_text += msg + "\n"
@@ -26,6 +27,8 @@ class ChatLayout(BoxLayout):
         user_input = self.ids.user_input.text.strip()
         if not user_input:
             return
+
+        self.stop_flag = False  # libera geração
 
         self.chat_text += f"You: {user_input}\nAI: "
         self.ids.user_input.text = ""
@@ -36,11 +39,17 @@ class ChatLayout(BoxLayout):
             daemon=True
         ).start()
 
+    def stop_generation(self):
+        self.stop_flag = True
+
     def _stream_response(self, user_input):
         prompt = "\n".join(self.memory + [f"User: {user_input}", "AI:"])
         response_text = ""
 
         for token in self.engine.stream(prompt):
+            if self.stop_flag:
+                break
+
             response_text += token
             Clock.schedule_once(
                 lambda dt, t=token: self._append_token(t)
